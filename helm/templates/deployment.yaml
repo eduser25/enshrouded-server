@@ -23,6 +23,19 @@ spec:
     spec:
       securityContext:
         fsGroup: 10000
+      initContainers:
+      - name: take-data-dir-ownership
+        image: alpine:3
+        # Give `grafana` user (id 472) permissions a mounted volume
+        # https://github.com/grafana/grafana-docker/blob/master/Dockerfile
+        command:
+        - chown
+        - -R
+        - 10000:10000
+        - /home/steam/enshrouded/savegame
+        volumeMounts:
+        - name: data
+          mountPath: /home/steam/enshrouded/savegame
       containers:
       - name: "{{ .Chart.Name }}"
         image: "{{ .Values.image }}:{{ .Values.imageTag }}"
